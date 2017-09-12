@@ -14,6 +14,7 @@ import android.os.Bundle;
 
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.FirebaseApp;
 
 import java.util.Map;
 
@@ -33,6 +34,7 @@ public class FCMPlugin extends CordovaPlugin {
 		super.initialize(cordova, webView);
 		gWebView = webView;
 		Log.d(TAG, "==> FCMPlugin initialize");
+        FirebaseApp.initializeApp(this.cordova.getActivity().getApplicationContext());
 		FirebaseMessaging.getInstance().subscribeToTopic("android");
 		FirebaseMessaging.getInstance().subscribeToTopic("all");
 	}

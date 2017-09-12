@@ -59,6 +59,7 @@ if (directoryExists(ANDROID_DIR)) {
 function updateStringsXml(contents) {
     var json = JSON.parse(contents);
     var strings = fs.readFileSync(PLATFORM.ANDROID.stringsXml).toString();
+    var eof = "</resources>";
 
     // strip non-default value
     strings = strings.replace(new RegExp('<string name="google_app_id">([^\@<]+?)</string>', 'i'), '');
@@ -69,12 +70,24 @@ function updateStringsXml(contents) {
     // strip empty lines
     strings = strings.replace(new RegExp('(\r\n|\n|\r)[ \t]*(\r\n|\n|\r)', 'gm'), '$1');
 
-    // replace the default value
-    strings = strings.replace(new RegExp('<string name="google_app_id">([^<]+?)</string>', 'i'), '<string name="google_app_id">' + json.client[0].client_info.mobilesdk_app_id + '</string>');
+    // add or replace the default value
+    var google_app_id_expr = new RegExp('<string name="google_app_id">([^<]+?)</string>', 'i');
+    var google_app_id_value = '<string name="google_app_id">' + json.client[0].client_info.mobilesdk_app_id + '</string>';
+    if(strings.match(google_app_id_expr)){
+        strings = strings.replace(google_app_id_expr, google_app_id_value);
+    }else{
+        strings = strings.replace(eof, google_app_id_value + eof);
+    }
 
-    // replace the default value
-    strings = strings.replace(new RegExp('<string name="google_api_key">([^<]+?)</string>', 'i'), '<string name="google_api_key">' + json.client[0].api_key[0].current_key + '</string>');
 
+    // add or replace the default value
+    var google_api_key_expr = new RegExp('<string name="google_api_key">([^<]+?)</string>', 'i');
+    var google_api_key_value = '<string name="google_api_key">' + json.client[0].api_key[0].current_key + '</string>';
+    if(strings.match(google_app_id_expr)){
+        strings = strings.replace(google_api_key_expr, google_api_key_value);
+    }else{
+        strings = strings.replace(eof, google_api_key_value + eof);
+    }
     fs.writeFileSync(PLATFORM.ANDROID.stringsXml, strings);
 }
 
